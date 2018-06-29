@@ -23,10 +23,26 @@ td {
     background-color: lightgray;
 }
 
-.selectedmorning {
-    background: linear-gradient(70deg, hotpink 50%, white 50%);
+.currentselectedmorning {
+    background: linear-gradient(70deg, cornflowerblue 50%, rgb(230, 230, 230) 50%, white 100%);
 }
 
-.selectedevening {
-    background: linear-gradient(70deg, white 50%, hotpink 50%);
+.currentselectedevening {
+    background: linear-gradient(110deg, white 0%, rgb(230, 230, 230) 50%, cornflowerblue 50%);
+}
+
+.currentselectedday {
+    background: linear-gradient(90deg, white 0%, rgb(230, 230, 230) 25%, cornflowerblue 25%, cornflowerblue 80%, rgb(230, 230, 230) 80%, white 0%);
+}
+
+.newselectedmorning {
+    background: linear-gradient(70deg, hotpink 50%, rgb(230, 230, 230) 50%, white 100%);
+}
+
+.newselectedevening {
+    background: linear-gradient(110deg, white 0%, rgb(230, 230, 230) 50%, hotpink 50%);
+}
+
+.newselectedday {
+    background: linear-gradient(90deg, white 0%, rgb(230, 230, 230) 25%, hotpink 25%, hotpink 80%, rgb(230, 230, 230) 80%, white 0%);
 }

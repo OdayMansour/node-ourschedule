@@ -11,5 +11,8 @@
     "url": "node-ourschedule"
   },
   "author": "Oday Mansour",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "node-calendar": "^0.1.5"
+  }
 }
