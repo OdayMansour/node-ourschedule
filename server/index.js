@@ -45,8 +45,58 @@ function printSummary() {
     })
 }
 
+function createEmptyRowsAndSendThem(year, month, res) {
+
+    var days_in_month = calendar.monthrange(year, month)[1]
+    
+    var stmt = db.prepare("INSERT INTO schedule VALUES (?, ?, ?, 0)");
+    for (var i=0; i < days_in_month; i++) {
+        stmt.run(year, month, i+1);
+    }
+    
+    stmt.finalize(function () {
+        queryAndSend(year, month, res)
+    });
+}
+
+function queryAndSend(year, month, res) {
+    var query = 
+        "SELECT year, month, day, shift from schedule where year = " + 
+        year + 
+        " and month = " + 
+        month + 
+        " order by year, month, day"
+    
+    db.all(query, function(err, rows) {
+    
+        if (rows.length == 0) {
+            console.log(
+                "No data found for year " + 
+                year + 
+                ", month " + 
+                month
+            )
+            console.log("Creating empty rows...")
+            createEmptyRowsAndSendThem(year, month, res)
+        } else {
+            console.log("Found " + rows.length + " days for year " + year + " month " + month)
+            res.send(rows)
+        }
+    
+    })
+}
+
 app.get('/', function (req, res) {
     res.send("Hello")
+})
+
+app.get('/state/year/:year_number/month/:month_number', function (req, res) {
+    
+    var year = req.params.year_number
+    var month = req.params.month_number
+
+    queryAndSend(year, month, res)
+
 })
 
 app.listen(1616, function() {
