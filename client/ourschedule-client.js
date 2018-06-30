@@ -1,83 +1,3 @@
-const calendar_days = 
-[ [ new Date("2018-06-24T22:00:00.000Z"),
-    new Date("2018-06-25T22:00:00.000Z"),
-    new Date("2018-06-26T22:00:00.000Z"),
-    new Date("2018-06-27T22:00:00.000Z"),
-    new Date("2018-06-28T22:00:00.000Z"),
-    new Date("2018-06-29T22:00:00.000Z"),
-    new Date("2018-06-30T22:00:00.000Z") ],
-  [ new Date("2018-07-01T22:00:00.000Z"),
-    new Date("2018-07-02T22:00:00.000Z"),
-    new Date("2018-07-03T22:00:00.000Z"),
-    new Date("2018-07-04T22:00:00.000Z"),
-    new Date("2018-07-05T22:00:00.000Z"),
-    new Date("2018-07-06T22:00:00.000Z"),
-    new Date("2018-07-07T22:00:00.000Z") ],
-  [ new Date("2018-07-08T22:00:00.000Z"),
-    new Date("2018-07-09T22:00:00.000Z"),
-    new Date("2018-07-10T22:00:00.000Z"),
-    new Date("2018-07-11T22:00:00.000Z"),
-    new Date("2018-07-12T22:00:00.000Z"),
-    new Date("2018-07-13T22:00:00.000Z"),
-    new Date("2018-07-14T22:00:00.000Z") ],
-  [ new Date("2018-07-15T22:00:00.000Z"),
-    new Date("2018-07-16T22:00:00.000Z"),
-    new Date("2018-07-17T22:00:00.000Z"),
-    new Date("2018-07-18T22:00:00.000Z"),
-    new Date("2018-07-19T22:00:00.000Z"),
-    new Date("2018-07-20T22:00:00.000Z"),
-    new Date("2018-07-21T22:00:00.000Z") ],
-  [ new Date("2018-07-22T22:00:00.000Z"),
-    new Date("2018-07-23T22:00:00.000Z"),
-    new Date("2018-07-24T22:00:00.000Z"),
-    new Date("2018-07-25T22:00:00.000Z"),
-    new Date("2018-07-26T22:00:00.000Z"),
-    new Date("2018-07-27T22:00:00.000Z"),
-    new Date("2018-07-28T22:00:00.000Z") ],
-  [ new Date("2018-07-29T22:00:00.000Z"),
-    new Date("2018-07-30T22:00:00.000Z"),
-    new Date("2018-07-31T22:00:00.000Z"),
-    new Date("2018-08-01T22:00:00.000Z"),
-    new Date("2018-08-02T22:00:00.000Z"),
-    new Date("2018-08-03T22:00:00.000Z"),
-    new Date("2018-08-04T22:00:00.000Z") ] ]
-
-const month_number = 6 // January = 0
-
-const current_state = [
-    0, // 01
-    0, // 02
-    2, // 03
-    2, // 04
-    0, // 05
-    0, // 06
-    0, // 07
-    0, // 08
-    3, // 09
-    3, // 10
-    0, // 11
-    0, // 12
-    3, // 13
-    3, // 14
-    3, // 15
-    0, // 16
-    0, // 17
-    0, // 18
-    3, // 19
-    2, // 20
-    0, // 21
-    0, // 22
-    0, // 23
-    0, // 24
-    0, // 25
-    0, // 26
-    3, // 27
-    3, // 28
-    3, // 29
-    0, // 30
-    0 // 31
-]
-
 const Work = {
     OFF: 0,
     MORNING: 1,
@@ -99,8 +19,8 @@ const NewWorkStyles = {
     EVENING: "newselectedevening",
 }
 
-// var current_state = new Array(31).fill(0)
-var new_state = current_state.slice()
+var current_state = []
+var new_state = []
 
 var current_month = 5
 const days = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche']
@@ -108,6 +28,13 @@ const days = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dima
 createTable()
 
 function createTable() {
+
+    var state = getState(6)
+    var month_days = state.days
+    var month_number = state.month
+    current_state = state.state
+    new_state = current_state.slice()
+
     var calendar = document.getElementById('calendar')
     var tbl = document.createElement('table')
     tbl.style.width = '100%'
@@ -124,14 +51,14 @@ function createTable() {
 
     tbdy.appendChild(tr)
     
-    for (var i = 0; i < calendar_days.length; i++) {
+    for (var i = 0; i < month_days.length; i++) {
         var tr = document.createElement('tr')
     
-        for (var j = 0; j < calendar_days[i].length; j++) {
+        for (var j = 0; j < month_days[i].length; j++) {
             var td = document.createElement('td')
     
-            if ( calendar_days[i][j].getMonth() == month_number ) {
-                td.appendChild(document.createTextNode(calendar_days[i][j].getDate() ) )
+            if ( month_days[i][j].getMonth() == month_number ) {
+                td.appendChild(document.createTextNode(month_days[i][j].getDate() ) )
                 td.onclick = cycleItem
             }
     
@@ -144,10 +71,11 @@ function createTable() {
     tbl.appendChild(tbdy)
     calendar.appendChild(tbl)
 
-    applyCurrentState()
+    applyCurrentState(current_state)
 }
 
-function applyCurrentState() {
+function applyCurrentState(current_state) {
+
     var cells = document.getElementsByTagName('td')
     for (var i=0; i<cells.length; i++) {
         if ( Number(cells[i].innerText) == cells[i].innerText ) {
@@ -194,13 +122,6 @@ function cycleItem() {
     var day_number = Number(this.innerText)
     var day_index = day_number - 1
 
-    // console.log("Clicked on: ")
-    // console.log(this)
-    // console.log("Working on day " + this.innerText)
-    // console.log("Current state = " + current_state[day_index])
-    // console.log("Actual state = " + new_state[day_index])
-    // console.log("Day index = " + day_index)
-
     if ( new_state[day_index] == Work.OFF ) {
         new_state[day_index] = Work.MORNING
     } else if ( new_state[day_index] == Work.MORNING ) {
@@ -211,16 +132,101 @@ function cycleItem() {
         new_state[day_index] = Work.OFF
     }
 
-    // console.log("Set new state to = " + new_state[day_index])
-
     if ( current_state[day_index] == new_state[day_index] ) {
         applyCellState(this, new_state[day_index], true)
     } else {
         applyCellState(this, new_state[day_index], false)
     }
 
-    // console.log(this)
+}
 
+function getState(month_number) {
+
+    const month_days = 
+[ [ new Date("2018-06-24T22:00:00.000Z"),
+    new Date("2018-06-25T22:00:00.000Z"),
+    new Date("2018-06-26T22:00:00.000Z"),
+    new Date("2018-06-27T22:00:00.000Z"),
+    new Date("2018-06-28T22:00:00.000Z"),
+    new Date("2018-06-29T22:00:00.000Z"),
+    new Date("2018-06-30T22:00:00.000Z") ],
+  [ new Date("2018-07-01T22:00:00.000Z"),
+    new Date("2018-07-02T22:00:00.000Z"),
+    new Date("2018-07-03T22:00:00.000Z"),
+    new Date("2018-07-04T22:00:00.000Z"),
+    new Date("2018-07-05T22:00:00.000Z"),
+    new Date("2018-07-06T22:00:00.000Z"),
+    new Date("2018-07-07T22:00:00.000Z") ],
+  [ new Date("2018-07-08T22:00:00.000Z"),
+    new Date("2018-07-09T22:00:00.000Z"),
+    new Date("2018-07-10T22:00:00.000Z"),
+    new Date("2018-07-11T22:00:00.000Z"),
+    new Date("2018-07-12T22:00:00.000Z"),
+    new Date("2018-07-13T22:00:00.000Z"),
+    new Date("2018-07-14T22:00:00.000Z") ],
+  [ new Date("2018-07-15T22:00:00.000Z"),
+    new Date("2018-07-16T22:00:00.000Z"),
+    new Date("2018-07-17T22:00:00.000Z"),
+    new Date("2018-07-18T22:00:00.000Z"),
+    new Date("2018-07-19T22:00:00.000Z"),
+    new Date("2018-07-20T22:00:00.000Z"),
+    new Date("2018-07-21T22:00:00.000Z") ],
+  [ new Date("2018-07-22T22:00:00.000Z"),
+    new Date("2018-07-23T22:00:00.000Z"),
+    new Date("2018-07-24T22:00:00.000Z"),
+    new Date("2018-07-25T22:00:00.000Z"),
+    new Date("2018-07-26T22:00:00.000Z"),
+    new Date("2018-07-27T22:00:00.000Z"),
+    new Date("2018-07-28T22:00:00.000Z") ],
+  [ new Date("2018-07-29T22:00:00.000Z"),
+    new Date("2018-07-30T22:00:00.000Z"),
+    new Date("2018-07-31T22:00:00.000Z"),
+    new Date("2018-08-01T22:00:00.000Z"),
+    new Date("2018-08-02T22:00:00.000Z"),
+    new Date("2018-08-03T22:00:00.000Z"),
+    new Date("2018-08-04T22:00:00.000Z") ] ]
+
+    // const month_number = 6 // January = 0
+
+    const current_state = [
+        0, // 01
+        0, // 02
+        2, // 03
+        2, // 04
+        0, // 05
+        0, // 06
+        0, // 07
+        0, // 08
+        3, // 09
+        3, // 10
+        0, // 11
+        0, // 12
+        3, // 13
+        3, // 14
+        3, // 15
+        0, // 16
+        0, // 17
+        0, // 18
+        3, // 19
+        2, // 20
+        0, // 21
+        0, // 22
+        0, // 23
+        0, // 24
+        0, // 25
+        0, // 26
+        3, // 27
+        3, // 28
+        3, // 29
+        0, // 30
+        0 // 31
+    ]
+
+    return {
+        "month": month_number,
+        "days": month_days,
+        "state": current_state
+    }
 }
 
 function sendState() {
