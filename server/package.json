@@ -13,6 +13,8 @@
   "author": "Oday Mansour",
   "license": "ISC",
   "dependencies": {
-    "node-calendar": "^0.1.5"
+    "express": "^4.16.3",
+    "node-calendar": "^0.1.5",
+    "sqlite3": "https://github.com/mapbox/node-sqlite3/tarball/master"
   }
 }
