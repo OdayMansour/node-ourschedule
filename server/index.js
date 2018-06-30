@@ -2,8 +2,6 @@ var calendar = require('node-calendar');
 var sqlite3 = require('sqlite3').verbose();
 var express = require('express');
 
-// console.log(new calendar.Calendar(0).monthdatescalendar(2018, 7))
-
 var db = new sqlite3.Database('schedule.db');
 var app = express();
 
@@ -96,6 +94,16 @@ app.get('/state/year/:year_number/month/:month_number', function (req, res) {
     var month = req.params.month_number
 
     queryAndSend(year, month, res)
+
+})
+
+app.get('/days/year/:year_number/month/:month_number', function (req, res) {
+    
+    var year = req.params.year_number
+    var month = req.params.month_number
+
+    console.log("Serving days for year " + year + " month " + month)
+    res.send(new calendar.Calendar(0).monthdatescalendar(year, month))
 
 })
 
