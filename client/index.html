@@ -6,8 +6,13 @@
         <link rel="stylesheet" type="text/css" href="ourschedule.css">
     </head>
     <body>
+        <center><span onclick="shiftMonth(-1)" style="float: left">Previous</span></center>
+        <center><span onclick="shiftMonth( 1)" style="float: right">Next</span></center>
+        <center><span id="title"></span></center>
+        
         <div id="calendar"></div>
-        <center><span onclick="sendState()">Submit</span></center>
+        
+        <center><span onclick="shiftMonth()">Submit</span></center>
     </body>
     <script src="ourschedule-client.js"></script>
 </html>

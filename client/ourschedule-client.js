@@ -1,6 +1,3 @@
-const globals_year = 2018
-const globals_month = 7
-
 ///////////////////////////////////////
 // Static stuff
 ///////////////////////////////////////
@@ -26,10 +23,14 @@ const NewShiftStyles = {
 }
 
 const day_names = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche']
+const month_names = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre']
 
 ///////////////////////////////////////
 // Globals variables
 ///////////////////////////////////////
+var globals_year = new Date().getFullYear()
+var globals_month = new Date().getMonth() + 1 // getMonth() -> Jan = 0, Dec = 11
+
 var current_state = []
 var days = []
 var new_state = []
@@ -37,8 +38,30 @@ var new_state = []
 ///////////////////////////////////////
 // Starts all the magic
 ///////////////////////////////////////
-getState(globals_year, globals_month)
+getState()
 
+function shiftMonth(shift) {
+    globals_month = globals_month + shift
+
+    if ( globals_month == 0 ) {
+        globals_month = 12
+        globals_year = globals_year - 1
+    } else if ( globals_month >12 ) {
+        globals_month = 1
+        globals_year = globals_year + 1
+    }
+
+    redrawCalendar()
+}
+
+function redrawCalendar() {
+
+    var calendar = document.getElementById('calendar-body')
+    calendar.parentNode.removeChild(calendar)
+
+    getState()
+
+}
 // Got all the server-side stuff
 function startWork() {
 
@@ -56,8 +79,11 @@ function createTable() {
 
     var month_index = globals_month - 1
 
+    document.getElementById('title').innerText = month_names[month_index] + " - " + globals_year
+
     var calendar = document.getElementById('calendar')
     var tbl = document.createElement('table')
+    tbl.id = 'calendar-body'
     tbl.style.width = '100%'
     tbl.setAttribute('border', '1')
     var tbdy = document.createElement('tbody')
@@ -185,11 +211,11 @@ function cycleItem() {
 
 }
 
-function getDays(year, month) {
+function getDays() {
 
     var request = new XMLHttpRequest();
 
-    request.open('GET', 'http://localhost:1616/days/year/' + year + '/month/' + month, true);
+    request.open('GET', 'http://localhost:1616/days/year/' + globals_year + '/month/' + globals_month, true);
 
     request.onload = function () {
         days = JSON.parse(this.responseText)
@@ -200,15 +226,15 @@ function getDays(year, month) {
 
 }
 
-function getState(year, month) {
+function getState() {
 
     var request = new XMLHttpRequest();
 
-    request.open('GET', 'http://localhost:1616/state/year/' + year + '/month/' + month, true);
+    request.open('GET', 'http://localhost:1616/state/year/' + globals_year + '/month/' + globals_month, true);
 
     request.onload = function () {
         current_state = JSON.parse(this.responseText)
-        getDays(year, month)
+        getDays()
         }
 
     request.send();
