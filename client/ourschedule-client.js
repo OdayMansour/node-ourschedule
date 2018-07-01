@@ -1,3 +1,9 @@
+const globals_year = 2018
+const globals_month = 7
+
+///////////////////////////////////////
+// Static stuff
+///////////////////////////////////////
 const Shift = {
     OFF: 0,
     MORNING: 1,
@@ -19,24 +25,36 @@ const NewShiftStyles = {
     EVENING: "newselectedevening",
 }
 
-
-const current_state = getState(2018,7)
-const days = getDays(2018,7)
-
-var new_state = []
-for (var i=0; i<current_state.length; i++) {
-    new_state = new_state.concat([JSON.parse(JSON.stringify(current_state[i]))])
-}
-
-
-var current_month = 5
 const day_names = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche']
 
-createTable()
+///////////////////////////////////////
+// Globals variables
+///////////////////////////////////////
+var current_state = []
+var days = []
+var new_state = []
 
+///////////////////////////////////////
+// Starts all the magic
+///////////////////////////////////////
+getState(globals_year, globals_month)
+
+// Got all the server-side stuff
+function startWork() {
+
+    for (var i=0; i<current_state.length; i++) {
+        new_state = new_state.concat([JSON.parse(JSON.stringify(current_state[i]))])
+    }
+    
+    createTable()
+
+}
+
+// Create the calendar
+// Calls applyCurrentState() when done
 function createTable() {
 
-    var month_number = 7 - 1
+    var month_index = globals_month - 1
 
     var calendar = document.getElementById('calendar')
     var tbl = document.createElement('table')
@@ -59,14 +77,16 @@ function createTable() {
     
         for (var j = 0; j < days[i].length; j++) {
             var td = document.createElement('td')
+
+            var day_object = new Date(days[i][j])
     
-            if ( days[i][j].getMonth() == month_number ) {
+            if ( day_object.getMonth() == month_index ) {
                 
-                if ( days[i][j].getDay() == 0 || days[i][j].getDay() == 6 ) {
+                if ( day_object.getDay() == 0 || day_object.getDay() == 6 ) {
                     td.classList.add('weekend')
                 } 
 
-                var day_of_month = days[i][j].getDate()
+                var day_of_month = day_object.getDate()
                 td.id = day_of_month
                 td.appendChild(document.createTextNode( day_of_month ) )
                 
@@ -82,12 +102,10 @@ function createTable() {
     tbl.appendChild(tbdy)
     calendar.appendChild(tbl)
 
-    console.log(current_state)
-    console.log(new_state)
-
     applyCurrentState(current_state)
 }
 
+// Colors the cells based on the current state
 function applyCurrentState(current_state) {
 
     var cells = document.getElementsByTagName('td')
@@ -100,6 +118,7 @@ function applyCurrentState(current_state) {
     }
 }
 
+// Removes functional classes from style, keeping custom classes
 function removeClasses(cell) {
     cell.classList.remove(CurrentShiftStyles.OFF)
     cell.classList.remove(CurrentShiftStyles.MORNING)
@@ -164,100 +183,40 @@ function cycleItem() {
         applyCellState(this, new_state[day_index]["shift"], false)
     }
 
-    console.log(this)
-
 }
 
 function getDays(year, month) {
-    const days = [ 
-        [ new Date("2018-06-24T22:00:00.000Z"),
-          new Date("2018-06-25T22:00:00.000Z"),
-          new Date("2018-06-26T22:00:00.000Z"),
-          new Date("2018-06-27T22:00:00.000Z"),
-          new Date("2018-06-28T22:00:00.000Z"),
-          new Date("2018-06-29T22:00:00.000Z"),
-          new Date("2018-06-30T22:00:00.000Z") ],
-        [ new Date("2018-07-01T22:00:00.000Z"),
-          new Date("2018-07-02T22:00:00.000Z"),
-          new Date("2018-07-03T22:00:00.000Z"),
-          new Date("2018-07-04T22:00:00.000Z"),
-          new Date("2018-07-05T22:00:00.000Z"),
-          new Date("2018-07-06T22:00:00.000Z"),
-          new Date("2018-07-07T22:00:00.000Z") ],
-        [ new Date("2018-07-08T22:00:00.000Z"),
-          new Date("2018-07-09T22:00:00.000Z"),
-          new Date("2018-07-10T22:00:00.000Z"),
-          new Date("2018-07-11T22:00:00.000Z"),
-          new Date("2018-07-12T22:00:00.000Z"),
-          new Date("2018-07-13T22:00:00.000Z"),
-          new Date("2018-07-14T22:00:00.000Z") ],
-        [ new Date("2018-07-15T22:00:00.000Z"),
-          new Date("2018-07-16T22:00:00.000Z"),
-          new Date("2018-07-17T22:00:00.000Z"),
-          new Date("2018-07-18T22:00:00.000Z"),
-          new Date("2018-07-19T22:00:00.000Z"),
-          new Date("2018-07-20T22:00:00.000Z"),
-          new Date("2018-07-21T22:00:00.000Z") ],
-        [ new Date("2018-07-22T22:00:00.000Z"),
-          new Date("2018-07-23T22:00:00.000Z"),
-          new Date("2018-07-24T22:00:00.000Z"),
-          new Date("2018-07-25T22:00:00.000Z"),
-          new Date("2018-07-26T22:00:00.000Z"),
-          new Date("2018-07-27T22:00:00.000Z"),
-          new Date("2018-07-28T22:00:00.000Z") ],
-        [ new Date("2018-07-29T22:00:00.000Z"),
-          new Date("2018-07-30T22:00:00.000Z"),
-          new Date("2018-07-31T22:00:00.000Z"),
-          new Date("2018-08-01T22:00:00.000Z"),
-          new Date("2018-08-02T22:00:00.000Z"),
-          new Date("2018-08-03T22:00:00.000Z"),
-          new Date("2018-08-04T22:00:00.000Z") ] 
-    ]
 
-    return days
+    var request = new XMLHttpRequest();
+
+    request.open('GET', 'http://localhost:1616/days/year/' + year + '/month/' + month, true);
+
+    request.onload = function () {
+        days = JSON.parse(this.responseText)
+        startWork()
+        }
+
+    request.send();
 
 }
 
 function getState(year, month) {
 
-    return [
-        {"year":2018,"month":7,"day":1,"shift":0},
-        {"year":2018,"month":7,"day":2,"shift":0},
-        {"year":2018,"month":7,"day":3,"shift":0},
-        {"year":2018,"month":7,"day":4,"shift":1},
-        {"year":2018,"month":7,"day":5,"shift":1},
-        {"year":2018,"month":7,"day":6,"shift":0},
-        {"year":2018,"month":7,"day":7,"shift":0},
-        {"year":2018,"month":7,"day":8,"shift":2},
-        {"year":2018,"month":7,"day":9,"shift":0},
-        {"year":2018,"month":7,"day":10,"shift":0},
-        {"year":2018,"month":7,"day":11,"shift":2},
-        {"year":2018,"month":7,"day":12,"shift":2},
-        {"year":2018,"month":7,"day":13,"shift":0},
-        {"year":2018,"month":7,"day":14,"shift":0},
-        {"year":2018,"month":7,"day":15,"shift":1},
-        {"year":2018,"month":7,"day":16,"shift":0},
-        {"year":2018,"month":7,"day":17,"shift":2},
-        {"year":2018,"month":7,"day":18,"shift":3},
-        {"year":2018,"month":7,"day":19,"shift":3},
-        {"year":2018,"month":7,"day":20,"shift":0},
-        {"year":2018,"month":7,"day":21,"shift":0},
-        {"year":2018,"month":7,"day":22,"shift":3},
-        {"year":2018,"month":7,"day":23,"shift":2},
-        {"year":2018,"month":7,"day":24,"shift":0},
-        {"year":2018,"month":7,"day":25,"shift":1},
-        {"year":2018,"month":7,"day":26,"shift":0},
-        {"year":2018,"month":7,"day":27,"shift":1},
-        {"year":2018,"month":7,"day":28,"shift":2},
-        {"year":2018,"month":7,"day":29,"shift":0},
-        {"year":2018,"month":7,"day":30,"shift":0},
-        {"year":2018,"month":7,"day":31,"shift":0}
-    ]
+    var request = new XMLHttpRequest();
+
+    request.open('GET', 'http://localhost:1616/state/year/' + year + '/month/' + month, true);
+
+    request.onload = function () {
+        current_state = JSON.parse(this.responseText)
+        getDays(year, month)
+        }
+
+    request.send();
+
 }
 
 function sendState() {
     console.log({
-        "month": month_number,
         "state": new_state
     })
 }
