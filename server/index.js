@@ -70,7 +70,14 @@ function queryAndSend(year, month, res) {
             console.log("Creating empty rows...")
             createEmptyRowsAndSendThem(year, month, res)
         } else {
-            console.log("Found " + rows.length + " days for year " + year + " month " + month)
+            console.log(
+                "Found " + 
+                rows.length + 
+                " days for year " + 
+                year + 
+                ", month " + 
+                month
+            )
             res.send(rows)
         }
     
@@ -88,7 +95,12 @@ app.get('/state/year/:year_number/month/:month_number', function (req, res) {
     var year = req.params.year_number
     var month = req.params.month_number
 
-    queryAndSend(year, month, res)
+    if ( month < 1 || month > 12 ) {
+        res.send("")
+        console.log("ERROR: Querying state for invalid date! " + year + ", " + month)
+    } else {
+        queryAndSend(year, month, res)
+    }
 
 })
 
@@ -97,8 +109,13 @@ app.get('/days/year/:year_number/month/:month_number', function (req, res) {
     var year = req.params.year_number
     var month = req.params.month_number
 
-    console.log("Serving days for year " + year + " month " + month)
-    res.send(new calendar.Calendar(0).monthdatescalendar(year, month))
+    if ( month < 1 || month > 12 ) {
+        console.log("ERROR: Querying days for invalid date! " + year + ", " + month)
+        res.send("")
+    } else {
+        console.log("Serving days for year " + year + ", month " + month)
+        res.send(new calendar.Calendar(0).monthdatescalendar(year, month))
+    }
 
 })
 
