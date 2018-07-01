@@ -21,29 +21,59 @@ td {
 }
 
 .weekend {
-    background-color: lightgray;
+    background-color: rgb(230, 230, 230);
 }
 
 .currentselectedmorning {
-    background: linear-gradient(70deg, cornflowerblue 50%, rgb(230, 230, 230) 50%, white 100%);
+    background: linear-gradient(
+        70deg, 
+        cornflowerblue 50%, 
+        rgb(230, 230, 230) 50%, 
+        white 100%);
 }
 
 .currentselectedevening {
-    background: linear-gradient(110deg, white 0%, rgb(230, 230, 230) 50%, cornflowerblue 50%);
+    background: linear-gradient(
+        110deg, 
+        white 0%, 
+        rgb(230, 230, 230) 50%, 
+        cornflowerblue 50%);
 }
 
 .currentselectedday {
-    background: linear-gradient(90deg, white 0%, rgb(230, 230, 230) 25%, cornflowerblue 25%, cornflowerblue 80%, rgb(230, 230, 230) 80%, white 0%);
+    background: linear-gradient(
+        90deg, 
+        white 0%, 
+        rgb(230, 230, 230) 25%, 
+        cornflowerblue 25%, 
+        cornflowerblue 80%, 
+        rgb(230, 230, 230) 80%, 
+        white 100%);
 }
 
 .newselectedmorning {
-    background: linear-gradient(70deg, hotpink 50%, rgb(230, 230, 230) 50%, white 100%);
+    background: linear-gradient(
+        70deg, 
+        hotpink 50%, 
+        rgb(230, 230, 230) 50%, 
+        white 100%);
 }
 
 .newselectedevening {
-    background: linear-gradient(110deg, white 0%, rgb(230, 230, 230) 50%, hotpink 50%);
+    background: linear-gradient(
+        110deg, 
+        white 0%, 
+        rgb(230, 230, 230) 50%, 
+        hotpink 50%);
 }
 
 .newselectedday {
-    background: linear-gradient(90deg, white 0%, rgb(230, 230, 230) 25%, hotpink 25%, hotpink 80%, rgb(230, 230, 230) 80%, white 0%);
+    background: linear-gradient(
+        90deg, 
+        white 0%, 
+        rgb(230, 230, 230) 25%, 
+        hotpink 25%, 
+        hotpink 80%, 
+        rgb(230, 230, 230) 80%, 
+        white 100%);
 }
