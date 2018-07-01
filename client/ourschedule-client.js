@@ -6,14 +6,14 @@ const Shift = {
 }
 
 const CurrentShiftStyles = {
-    OFF: "",
+    OFF: "currentunselected",
     MORNING: "currentselectedmorning",
     DAY: "currentselectedday",
     EVENING: "currentselectedevening",
 }
 
 const NewShiftStyles = {
-    OFF: "",
+    OFF: "newunselected",
     MORNING: "newselectedmorning",
     DAY: "newselectedday",
     EVENING: "newselectedevening",
@@ -61,7 +61,15 @@ function createTable() {
             var td = document.createElement('td')
     
             if ( days[i][j].getMonth() == month_number ) {
-                td.appendChild(document.createTextNode(days[i][j].getDate() ) )
+                
+                if ( days[i][j].getDay() == 0 || days[i][j].getDay() == 6 ) {
+                    td.classList.add('weekend')
+                } 
+
+                var day_of_month = days[i][j].getDate()
+                td.id = day_of_month
+                td.appendChild(document.createTextNode( day_of_month ) )
+                
                 td.onclick = cycleItem
             }
     
@@ -84,41 +92,53 @@ function applyCurrentState(current_state) {
 
     var cells = document.getElementsByTagName('td')
     for (var i=0; i<cells.length; i++) {
-        if ( Number(cells[i].innerText) == cells[i].innerText && cells[i].innerText.length > 0 ) {
-            var day_number = Number(cells[i].innerText)
+        if ( Number(cells[i].id) == cells[i].id && cells[i].id.length > 0 ) {
+            var day_number = Number(cells[i].id)
             var day_index = day_number - 1
             applyCellState(cells[i], current_state[day_index]["shift"], true)
         }
     }
 }
 
+function removeClasses(cell) {
+    cell.classList.remove(CurrentShiftStyles.OFF)
+    cell.classList.remove(CurrentShiftStyles.MORNING)
+    cell.classList.remove(CurrentShiftStyles.DAY)
+    cell.classList.remove(CurrentShiftStyles.EVENING)
+    cell.classList.remove(NewShiftStyles.OFF)
+    cell.classList.remove(NewShiftStyles.MORNING)
+    cell.classList.remove(NewShiftStyles.DAY)
+    cell.classList.remove(NewShiftStyles.EVENING)
+}
+
 function applyCellState(cell, state, current) {
+    removeClasses(cell)
     if ( current ) {
         if ( state == Shift.OFF ) {
-            cell.className = CurrentShiftStyles.OFF
+            cell.classList.add(CurrentShiftStyles.OFF)
         }
         if ( state == Shift.MORNING ) {
-            cell.className = CurrentShiftStyles.MORNING
+            cell.classList.add(CurrentShiftStyles.MORNING)
         }
         if ( state == Shift.DAY ) {
-            cell.className = CurrentShiftStyles.DAY
+            cell.classList.add(CurrentShiftStyles.DAY)
         }
         if ( state == Shift.EVENING ) {
-            cell.className = CurrentShiftStyles.EVENING
+            cell.classList.add(CurrentShiftStyles.EVENING)
         }
 
     } else {
         if ( state == Shift.OFF ) {
-            cell.className = NewShiftStyles.OFF
+            cell.classList.add(NewShiftStyles.OFF)
         }
         if ( state == Shift.MORNING ) {
-            cell.className = NewShiftStyles.MORNING
+            cell.classList.add(NewShiftStyles.MORNING)
         }
         if ( state == Shift.DAY ) {
-            cell.className = NewShiftStyles.DAY
+            cell.classList.add(NewShiftStyles.DAY)
         }
         if ( state == Shift.EVENING ) {
-            cell.className = NewShiftStyles.EVENING
+            cell.classList.add(NewShiftStyles.EVENING)
         }
     }
 }
@@ -127,11 +147,6 @@ function cycleItem() {
 
     var day_number = Number(this.innerText)
     var day_index = day_number - 1
-
-    console.log("current_state = ")
-    console.log(current_state[day_index])
-    console.log("new_state = ")
-    console.log(new_state[day_index])
 
     if ( new_state[day_index]["shift"] == Shift.OFF ) {
         new_state[day_index]["shift"] = Shift.MORNING
