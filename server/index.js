@@ -77,8 +77,10 @@ function queryAndSend(year, month, res) {
     })
 }
 
+app.use(express.static('../client'))
+
 app.get('/', function (req, res) {
-    res.send("Hello")
+    res.send("Root")
 })
 
 app.get('/state/year/:year_number/month/:month_number', function (req, res) {
