@@ -130,6 +130,16 @@ app.post('/state/year/:year_number/month/:month_number', function (req, res) {
         stmt.run(new_state[i].shift, new_state[i].year, new_state[i].month, new_state[i].day);
     }
 
+    stmt.finalize(function () {
+        res.send("")
+        console.log(
+            "Applied state change for year " + 
+            year + 
+            ", month " + 
+            month
+        )
+    });
+
 })
 
 app.listen(1616, function() {
