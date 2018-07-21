@@ -135,15 +135,9 @@ app.post('/state/year/:year_number/month/:month_number', function (req, res) {
         res.send("")
         console.log(
             "Applied state change for year " + 
-<<<<<<< HEAD
             req.params.year_number + 
             ", month " + 
             req.params.month_number
-=======
-            year + 
-            ", month " + 
-            month
->>>>>>> 1631f52e4019eb15348d5b0050028d250ada4438
         )
     });
 
