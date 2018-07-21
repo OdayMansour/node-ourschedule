@@ -52,6 +52,7 @@ function createEmptyRowsAndSendThem(year, month, res) {
 }
 
 function queryAndSend(year, month, res) {
+    
     var query = 
         "SELECT year, month, day, shift from schedule where year = " + 
         year + 
@@ -97,7 +98,7 @@ app.get('/state/year/:year_number/month/:month_number', function (req, res) {
     var year = req.params.year_number
     var month = req.params.month_number
 
-    if ( month < 1 || month > 12 ) {
+    if ( month < 1 || month > 12 || month == "NaN" || year == "NaN" ) {
         res.send("")
         console.log("ERROR: Querying state for invalid date! " + year + ", " + month)
     } else {
@@ -129,6 +130,16 @@ app.post('/state/year/:year_number/month/:month_number', function (req, res) {
     for (var i=0; i < new_state.length; i++) {
         stmt.run(new_state[i].shift, new_state[i].year, new_state[i].month, new_state[i].day);
     }
+
+    stmt.finalize(function () {
+        res.send("")
+        console.log(
+            "Applied state change for year " + 
+            req.params.year_number + 
+            ", month " + 
+            req.params.month_number
+        )
+    });
 
 })
 
