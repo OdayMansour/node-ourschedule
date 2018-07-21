@@ -1,6 +1,7 @@
 var calendar = require('node-calendar');
 var sqlite3 = require('sqlite3').verbose();
 var express = require('express');
+var bodyParser = require('body-parser');
 
 var db = new sqlite3.Database('schedule.db');
 var app = express();
@@ -85,6 +86,7 @@ function queryAndSend(year, month, res) {
 }
 
 app.use(express.static('../client'))
+app.use(bodyParser.json())
 
 app.get('/', function (req, res) {
     res.send("Root")
@@ -115,6 +117,17 @@ app.get('/days/year/:year_number/month/:month_number', function (req, res) {
     } else {
         console.log("Serving days for year " + year + ", month " + month)
         res.send(new calendar.Calendar(0).monthdatescalendar(year, month))
+    }
+
+})
+
+app.post('/state/year/:year_number/month/:month_number', function (req, res) {
+    
+    var new_state = req.body
+
+    var stmt = db.prepare("UPDATE schedule SET shift = ? where year = ? and month = ? and day = ?");
+    for (var i=0; i < new_state.length; i++) {
+        stmt.run(new_state[i].shift, new_state[i].year, new_state[i].month, new_state[i].day);
     }
 
 })
