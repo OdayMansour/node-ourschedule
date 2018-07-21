@@ -65,6 +65,8 @@ function redrawCalendar() {
 // Got all the server-side stuff
 function startWork() {
 
+    new_state = []
+
     for (var i=0; i<current_state.length; i++) {
         new_state = new_state.concat([JSON.parse(JSON.stringify(current_state[i]))])
     }
@@ -245,4 +247,16 @@ function sendState() {
     console.log({
         "state": new_state
     })
+
+    var request = new XMLHttpRequest();
+
+    request.open('POST', 'http://localhost:1616/state/year/' + globals_year + '/month/' + globals_month, true);
+    request.setRequestHeader("Content-type", "application/json")
+    request.send(JSON.stringify(new_state))
+    request.onreadystatechange = function () {
+        if (request.readyState == 4 && request.status == 200) {
+            redrawCalendar()
+        }
+    }
+
 }
