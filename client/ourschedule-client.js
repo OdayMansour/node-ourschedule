@@ -217,7 +217,7 @@ function getDays() {
 
     var request = new XMLHttpRequest();
 
-    request.open('GET', 'http://oday.nyc:1616/days/year/' + globals_year + '/month/' + globals_month, true);
+    request.open('GET', '/days/year/' + globals_year + '/month/' + globals_month, true);
 
     request.onload = function () {
         days = JSON.parse(this.responseText)
@@ -232,7 +232,7 @@ function getState() {
 
     var request = new XMLHttpRequest();
 
-    request.open('GET', 'http://oday.nyc:1616/state/year/' + globals_year + '/month/' + globals_month, true);
+    request.open('GET', '/state/year/' + globals_year + '/month/' + globals_month, true);
 
     request.onload = function () {
         current_state = JSON.parse(this.responseText)
@@ -250,7 +250,7 @@ function sendState() {
 
     var request = new XMLHttpRequest();
 
-    request.open('POST', 'http://oday.nyc:1616/state/year/' + globals_year + '/month/' + globals_month, true);
+    request.open('POST', '/state/year/' + globals_year + '/month/' + globals_month, true);
     request.setRequestHeader("Content-type", "application/json")
     request.send(JSON.stringify(new_state))
     request.onreadystatechange = function () {
