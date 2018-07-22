@@ -128,7 +128,7 @@ app.get('/days/year/:year_number/month/:month_number', function (req, res) {
     var year = req.params.year_number
     var month = req.params.month_number
 
-    if ( month < 1 || month > 12 ) {
+    if ( month < 1 || month > 12 || month == "NaN" || year == "NaN" ) {
         console.log("ERROR: Querying days for invalid date! " + year + ", " + month)
         res.send("")
     } else {

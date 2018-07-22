@@ -22,7 +22,7 @@ const NewShiftStyles = {
     EVENING: "newselectedevening",
 }
 
-const day_names = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche']
+const day_names = ['Lun.', 'Mar.', 'Med.', 'Jeu.', 'Ven.', 'Sam.', 'Dim.']
 const month_names = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre']
 
 ///////////////////////////////////////
@@ -55,16 +55,13 @@ function shiftMonth(shift) {
 }
 
 function redrawCalendar() {
-
     var calendar = document.getElementById('calendar-body')
     calendar.parentNode.removeChild(calendar)
 
     getState()
-
 }
 // Got all the server-side stuff
 function startWork() {
-
     new_state = []
 
     for (var i=0; i<current_state.length; i++) {
@@ -72,13 +69,11 @@ function startWork() {
     }
     
     createTable()
-
 }
 
 // Create the calendar
 // Calls applyCurrentState() when done
 function createTable() {
-
     var month_index = globals_month - 1
 
     document.getElementById('title').innerText = month_names[month_index] + " - " + globals_year
@@ -92,10 +87,10 @@ function createTable() {
     var tr = document.createElement('tr')
 
     for (var i = 0; i < day_names.length; i++ ) {
-        var td = document.createElement('td')
-        td.classList.add('day')
-        td.innerHTML = day_names[i]
-        tr.appendChild(td)
+        var th = document.createElement('th')
+        th.classList.add('day')
+        th.innerHTML = day_names[i]
+        tr.appendChild(th)
     }
 
     tbdy.appendChild(tr)
@@ -135,7 +130,6 @@ function createTable() {
 
 // Colors the cells based on the current state
 function applyCurrentState(current_state) {
-
     var cells = document.getElementsByTagName('td')
     for (var i=0; i<cells.length; i++) {
         if ( Number(cells[i].id) == cells[i].id && cells[i].id.length > 0 ) {
@@ -191,7 +185,6 @@ function applyCellState(cell, state, current) {
 }
 
 function cycleItem() {
-
     var day_number = Number(this.innerText)
     var day_index = day_number - 1
 
@@ -210,44 +203,33 @@ function cycleItem() {
     } else {
         applyCellState(this, new_state[day_index]["shift"], false)
     }
-
 }
 
 function getDays() {
-
     var request = new XMLHttpRequest();
 
     request.open('GET', '/days/year/' + globals_year + '/month/' + globals_month, true);
-
     request.onload = function () {
         days = JSON.parse(this.responseText)
         startWork()
         }
 
     request.send();
-
 }
 
 function getState() {
-
     var request = new XMLHttpRequest();
 
     request.open('GET', '/state/year/' + globals_year + '/month/' + globals_month, true);
-
     request.onload = function () {
         current_state = JSON.parse(this.responseText)
         getDays()
         }
 
     request.send();
-
 }
 
 function sendState() {
-    console.log({
-        "state": new_state
-    })
-
     var request = new XMLHttpRequest();
 
     request.open('POST', '/state/year/' + globals_year + '/month/' + globals_month, true);
