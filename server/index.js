@@ -8,6 +8,16 @@ var app = express();
 
 db.serialize(checkSchema)
 
+app.listen(1616, function() {
+    console.log("Listening on port 1616")
+})
+
+// To serve the frontend page
+app.use(express.static('../client'))
+// To parse content of POST requests
+app.use(bodyParser.json())
+
+// Checks for the schema, creates it if it's missing
 function checkSchema() {
     db.run("SELECT 1 FROM schedule", function(err, row) {
         if (err) {
@@ -20,6 +30,7 @@ function checkSchema() {
     })
 }
 
+// Creates the schema when missing
 function createSchema() {
     db.run("CREATE TABLE schedule ( year NUMERIC, month NUMERIC, day NUMERIC, shift NUMERIC )", function(err, row) {
         if (err) {
@@ -31,12 +42,14 @@ function createSchema() {
     })
 }
 
+// Writes a summary of database contents and prints it out
 function printSummary() {
     db.each("SELECT year, month, count(day) from schedule group by year, month order by year, month", function(err, row) {
         console.log(row)
     })
 }
 
+// Creates the blank state for missing months
 function createEmptyRowsAndSendThem(year, month, res) {
 
     var days_in_month = calendar.monthrange(year, month)[1]
@@ -51,6 +64,9 @@ function createEmptyRowsAndSendThem(year, month, res) {
     });
 }
 
+// Will query the state from the DB
+// If no state for a year, month combo is found,
+// creates a blank state for the month then calls itself again to serve it
 function queryAndSend(year, month, res) {
     
     var query = 
@@ -86,13 +102,11 @@ function queryAndSend(year, month, res) {
     })
 }
 
-app.use(express.static('../client'))
-app.use(bodyParser.json())
+///////////////
+// GET Requests
 
-app.get('/', function (req, res) {
-    res.send("Root")
-})
-
+// Returns the state for a given year and month
+// Used to populate the calendar on the frontend
 app.get('/state/year/:year_number/month/:month_number', function (req, res) {
     
     var year = req.params.year_number
@@ -107,6 +121,8 @@ app.get('/state/year/:year_number/month/:month_number', function (req, res) {
 
 })
 
+// Returns the days for a given year and month
+// Used to build the calendar on the frontend
 app.get('/days/year/:year_number/month/:month_number', function (req, res) {
     
     var year = req.params.year_number
@@ -122,6 +138,10 @@ app.get('/days/year/:year_number/month/:month_number', function (req, res) {
 
 })
 
+///////////////
+// POST Requests
+
+// Saves submitted state into the database
 app.post('/state/year/:year_number/month/:month_number', function (req, res) {
     
     var new_state = req.body
@@ -141,8 +161,4 @@ app.post('/state/year/:year_number/month/:month_number', function (req, res) {
         )
     });
 
-})
-
-app.listen(1616, function() {
-    console.log("Listening on port 1616")
 })
