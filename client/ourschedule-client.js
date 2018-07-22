@@ -240,5 +240,12 @@ function sendState() {
             redrawCalendar()
         }
     }
+}
 
+function getTextFree() {
+    window.location.href = '/text/free/year/' + globals_year + '/month/' + globals_month
+}
+
+function getTextBusy() {
+    window.location.href = '/text/busy/year/' + globals_year + '/month/' + globals_month
 }

@@ -102,6 +102,79 @@ function queryAndSend(year, month, res) {
     })
 }
 
+function queryAndProcessAndSend(year, month, process, res) {
+    
+    var query = 
+        "SELECT year, month, day, shift from schedule where year = " + 
+        year + 
+        " and month = " + 
+        month + 
+        " order by year, month, day"
+
+    db.all(query, function(err, rows) {
+        process(rows, res)
+    })
+
+}
+
+function generateFree(rows, res) {
+
+    const month_names = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre']
+    const day_names = ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi']
+    const shift_names = ['matin', 'jour', 'soir']
+    var return_text = ""
+    var last = 0
+    var skipped = false
+
+    return_text += "Disponibilite en " + month_names[rows[0].month - 1]+ ": \n"
+
+    for (var i=0; i<rows.length; i++) {
+        if ( rows[i].shift == 0 ) {
+            var day = new Date(rows[i].year, rows[i].month-1, rows[i].day)
+            return_text += day_names[day.getDay()] + " " + rows[i].day + "\n"
+            last = i
+            skipped = false
+        }
+        if ( i > last && !skipped ) {
+            return_text += "\n"
+            skipped = true
+        }
+    }
+
+    res.setHeader('Content-Type', 'text/plain')
+    res.send(return_text)
+
+}
+
+function generateBusy(rows, res) {
+
+    const month_names = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre']
+    const day_names = ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi']
+    const shift_names = ['matin', 'jour', 'soir']
+    var return_text = ""
+    var last = 0
+    var skipped = false
+
+    return_text += "Travail en " + month_names[rows[0].month - 1]+ ": \n"
+
+    for (var i=0; i<rows.length; i++) {
+        if ( rows[i].shift != 0 ) {
+            var day = new Date(rows[i].year, rows[i].month-1, rows[i].day)
+            return_text += day_names[day.getDay()] + " " + rows[i].day + ", " + shift_names[rows[i].shift-1] + "\n"
+            last = i
+            skipped = false
+        }
+        if ( i > last && !skipped ) {
+            return_text += "\n"
+            skipped = true
+        }
+    }
+
+    res.setHeader('Content-Type', 'text/plain')
+    res.send(return_text)
+
+}
+
 ///////////////
 // GET Requests
 
@@ -135,6 +208,24 @@ app.get('/days/year/:year_number/month/:month_number', function (req, res) {
         console.log("Serving days for year " + year + ", month " + month)
         res.send(new calendar.Calendar(0).monthdatescalendar(year, month))
     }
+
+})
+
+app.get('/text/free/year/:year_number/month/:month_number', function (req, res) {
+
+    var year = req.params.year_number
+    var month = req.params.month_number
+
+    queryAndProcessAndSend(year, month, generateFree, res)
+
+})
+
+app.get('/text/busy/year/:year_number/month/:month_number', function (req, res) {
+
+    var year = req.params.year_number
+    var month = req.params.month_number
+
+    queryAndProcessAndSend(year, month, generateBusy, res)
 
 })
 
