@@ -157,45 +157,24 @@ function applyCurrentState(current_state) {
 
 // Removes functional classes from style, keeping custom classes
 function removeClasses(cell) {
-    cell.classList.remove(CurrentShiftStyles.OFF)
-    cell.classList.remove(CurrentShiftStyles.MORNING)
-    cell.classList.remove(CurrentShiftStyles.DAY)
-    cell.classList.remove(CurrentShiftStyles.EVENING)
-    cell.classList.remove(NewShiftStyles.OFF)
-    cell.classList.remove(NewShiftStyles.MORNING)
-    cell.classList.remove(NewShiftStyles.DAY)
-    cell.classList.remove(NewShiftStyles.EVENING)
+    cell.classList.remove('selected')
 }
 
 function applyCellState(cell, state, current) {
-    removeClasses(cell)
-    if ( current ) {
-        if ( state == Shift.OFF ) {
-            cell.classList.add(CurrentShiftStyles.OFF)
-        }
-        if ( state == Shift.MORNING ) {
-            cell.classList.add(CurrentShiftStyles.MORNING)
-        }
-        if ( state == Shift.DAY ) {
-            cell.classList.add(CurrentShiftStyles.DAY)
-        }
-        if ( state == Shift.EVENING ) {
-            cell.classList.add(CurrentShiftStyles.EVENING)
-        }
-
-    } else {
-        if ( state == Shift.OFF ) {
-            cell.classList.add(NewShiftStyles.OFF)
-        }
-        if ( state == Shift.MORNING ) {
-            cell.classList.add(NewShiftStyles.MORNING)
-        }
-        if ( state == Shift.DAY ) {
-            cell.classList.add(NewShiftStyles.DAY)
-        }
-        if ( state == Shift.EVENING ) {
-            cell.classList.add(NewShiftStyles.EVENING)
-        }
+    console.log(cell)
+    if ( state == Shift.OFF ) {
+        removeClasses(cell.children[0])
+    }
+    if ( state == Shift.MORNING ) {
+        cell.children[2].classList.add('selected')
+    }
+    if ( state == Shift.DAY ) {
+        removeClasses(cell.children[2])
+        cell.children[1].classList.add('selected')
+    }
+    if ( state == Shift.EVENING ) {
+        removeClasses(cell.children[1])
+        cell.children[0].classList.add('selected')
     }
 }
 
