@@ -112,7 +112,22 @@ function createTable() {
                 var day_of_month = day_object.getDate()
                 td.id = day_of_month
                 td.appendChild(document.createTextNode( day_of_month ) )
-                
+
+                    var circle = document.createElement('div')
+                    circle.classList.add('circle')
+                    circle.id = day_of_month + "_right"
+                    td.appendChild(circle)
+
+                    circle = document.createElement('div')
+                    circle.classList.add('circle')
+                    circle.id = day_of_month + "_mid"
+                    td.appendChild(circle)
+
+                    circle = document.createElement('div')
+                    circle.classList.add('circle')
+                    circle.id = day_of_month + "_left"
+                    td.appendChild(circle)
+
                 td.onclick = cycleItem
             }
     
@@ -185,7 +200,10 @@ function applyCellState(cell, state, current) {
 }
 
 function cycleItem() {
-    var day_number = Number(this.innerText)
+    console.log("Cycling item:")
+    console.log(this)
+    console.log(this.id)
+    var day_number = Number(this.id)
     var day_index = day_number - 1
 
     if ( new_state[day_index]["shift"] == Shift.OFF ) {
