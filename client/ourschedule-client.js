@@ -158,7 +158,6 @@ function removeClasses(cell) {
 }
 
 function applyCellState(cell, state, current) {
-    console.log(cell)
     if ( state == Shift.OFF ) {
         removeClasses(cell.children[0])
     }
@@ -265,7 +264,7 @@ function sendState() {
 
     request.open('POST', '/state/year/' + globals_year + '/month/' + globals_month, true);
     request.setRequestHeader("Content-type", "application/json")
-    request.send(JSON.stringify(new_state))
+    request.send(JSON.stringify(current_state))
     request.onreadystatechange = function () {
         if (request.readyState == 4 && request.status == 200) {
             redrawCalendar()

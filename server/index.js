@@ -288,19 +288,26 @@ app.post('/state/year/:year_number/month/:month_number', function (req, res) {
     
     var new_state = req.body
 
-    var stmt = db.prepare("UPDATE schedule SET shift = ? where year = ? and month = ? and day = ?");
-    for (var i=0; i < new_state.length; i++) {
-        stmt.run(new_state[i].shift, new_state[i].year, new_state[i].month, new_state[i].day);
-    }
+    if ( new_state.length > 0 ) {
+        var deleter = "DELETE FROM schedule WHERE month = " + req.body[0].month;
+        db.run(deleter)
 
-    stmt.finalize(function () {
+        var stmt = db.prepare("INSERT INTO schedule values (?, ?, ?, ?, ?)");
+        for (var i=0; i < new_state.length; i++) {
+            stmt.run(new_state[i].year, new_state[i].month, new_state[i].day, new_state[i].shift, new_state[i].client);
+        }
+
+        stmt.finalize(function () {
+            res.send("")
+            console.log(
+                "Applied state change for year " + 
+                req.params.year_number + 
+                ", month " + 
+                req.params.month_number
+            )
+        })
+    } else {
         res.send("")
-        console.log(
-            "Applied state change for year " + 
-            req.params.year_number + 
-            ", month " + 
-            req.params.month_number
-        )
-    });
-
+        console.log("Received empty state, did nothing.")
+    }
 })
