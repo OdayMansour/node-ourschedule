@@ -175,28 +175,53 @@ function applyCellState(cell, state, current) {
     }
 }
 
+function cycleShift(shift) {
+    if ( shift ==  Shift.OFF ) {
+        return Shift.MORNING
+    } else if ( shift ==  Shift.MORNING ) {
+        return Shift.DAY
+    } else if ( shift ==  Shift.DAY ) {
+        return Shift.EVENING
+    } else {
+        return Shift.OFF
+    }
+}
+
 function cycleItem() {
     console.log("Cycling item:")
     console.log(this)
     console.log(this.id)
     var day_number = Number(this.id)
-    var day_index = day_number - 1
 
-    if ( new_state[day_index]["shift"] == Shift.OFF ) {
-        new_state[day_index]["shift"] = Shift.MORNING
-    } else if ( new_state[day_index]["shift"] == Shift.MORNING ) {
-        new_state[day_index]["shift"] = Shift.DAY
-    } else if ( new_state[day_index]["shift"] == Shift.DAY ) {
-        new_state[day_index]["shift"] = Shift.EVENING
-    } else {
-        new_state[day_index]["shift"] = Shift.OFF
+    var state_index = -1
+    var old_shift = 0
+    var old_client = 0
+
+    for (var i=0; i<current_state.length; i++) {
+        if ( current_state[i].day == day_number ) {
+            old_shift = current_state[i].shift
+            old_client = current_state[i].client
+            state_index = i
+        }
     }
 
-    if ( current_state[day_index]["shift"] == new_state[day_index]["shift"] ) {
-        applyCellState(this, new_state[day_index]["shift"], true)
+    var new_client = 1
+    var new_shift = cycleShift(old_shift)
+
+    if (state_index > -1) { // Found a line for the state already
+        current_state[state_index].shift = new_shift
     } else {
-        applyCellState(this, new_state[day_index]["shift"], false)
+        var new_state_item = {
+            year: globals_year,
+            month: globals_month,
+            day: day_number,
+            shift: new_shift,
+            client: new_client
+        }
+        current_state.push(new_state_item)
     }
+
+    applyCellState(this, new_shift, true)
 }
 
 function getClients() {
