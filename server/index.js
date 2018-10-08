@@ -6,6 +6,8 @@ var bodyParser = require('body-parser');
 var db = new sqlite3.Database('schedule.db');
 var app = express();
 
+const currentVersion = 1;
+
 db.serialize(checkSchema)
 
 app.listen(1616, function() {
@@ -38,20 +40,30 @@ app.use(function (req, res, next) {
 
 // Checks for the schema, creates it if it's missing
 function checkSchema() {
-    db.run("SELECT 1 FROM schedule", function(err, row) {
+    db.all("SELECT version FROM version", function(err, rows) {
         if (err) {
             console.log("No schema found, creating...")
             createSchema()
         } else {
-            console.log("Found schema.")
-            printSummary()
+            console.log("Found schema version " + rows[0].version + ", current version " + currentVersion)
+            checkVersion(rows[0].version)
         }
     })
 }
 
+function checkVersion(version) {
+    if ( version == currentVersion ) {
+        console.log("Schema up to date")
+        printSummary()
+    } else {
+        console.log("Schema not up to date! Exiting...")
+        process.exit()
+    }
+}
+
 // Creates the schema when missing
 function createSchema() {
-    db.run("CREATE TABLE schedule ( year NUMERIC, month NUMERIC, day NUMERIC, shift NUMERIC )", function(err, row) {
+    db.run("CREATE TABLE schedule ( year INTEGER, month INTEGER, day INTEGER, shift INTEGER )", function(err, row) {
         if (err) {
             console.log("Could not create schema.")
             console.log(err)
@@ -63,7 +75,10 @@ function createSchema() {
 
 // Writes a summary of database contents and prints it out
 function printSummary() {
-    db.each("SELECT year, month, count(day) from schedule group by year, month order by year, month", function(err, row) {
+    db.each("SELECT year, month, count(day) FROM schedule GROUP BY year, month ORDER BY year, month", function(err, row) {
+        console.log(row)
+    })
+    db.each("SELECT id, name, color, active FROM clients", function(err, row) {
         console.log(row)
     })
 }
