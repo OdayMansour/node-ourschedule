@@ -33,6 +33,7 @@ var globals_month = new Date().getMonth() + 1 // getMonth() -> Jan = 0, Dec = 11
 
 var current_state = []
 var days = []
+var clients = []
 var new_state = []
 
 ///////////////////////////////////////
@@ -202,13 +203,25 @@ function cycleItem() {
     }
 }
 
+function getClients() {
+    var request = new XMLHttpRequest();
+
+    request.open('GET', '/clients/active', true);
+    request.onload = function () {
+        clients = JSON.parse(this.responseText)
+        startWork()
+        }
+
+    request.send();
+}
+
 function getDays() {
     var request = new XMLHttpRequest();
 
     request.open('GET', '/days/year/' + globals_year + '/month/' + globals_month, true);
     request.onload = function () {
         days = JSON.parse(this.responseText)
-        startWork()
+        getClients()
         }
 
     request.send();
