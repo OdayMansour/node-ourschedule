@@ -14,7 +14,7 @@ app.listen(1616, function() {
     console.log("Listening on port 1616")
 })
 
-// To serve the frontend page
+// To serve the front-end page
 app.use(express.static('../client'))
 // To parse content of POST requests
 app.use(bodyParser.json())
@@ -98,17 +98,28 @@ function createEmptyRowsAndSendThem(year, month, res) {
     });
 }
 
+function queryClientsAndSend(active, res) {
+    var query = "SELECT id, name, color FROM clients WHERE active = 1"
+    db.all(query, function(err, rows) {
+        res.send(rows)
+    })
+}
+
+function queryActiveClientsAndSend(res) {
+    queryClientsAndSend(true, res)
+}
+
 // Will query the state from the DB
 // If no state for a year, month combo is found,
 // creates a blank state for the month then calls itself again to serve it
 function queryAndSend(year, month, res) {
     
     var query = 
-        "SELECT year, month, day, shift from schedule where year = " + 
+        "SELECT year, month, day, shift FROM schedule WHERE year = " + 
         year + 
-        " and month = " + 
+        " AND month = " + 
         month + 
-        " order by year, month, day"
+        " ORDER BY year, month, day"
     
     db.all(query, function(err, rows) {
     
@@ -139,11 +150,11 @@ function queryAndSend(year, month, res) {
 function queryAndProcessAndSend(year, month, process, res) {
     
     var query = 
-        "SELECT year, month, day, shift from schedule where year = " + 
+        "SELECT year, month, day, shift FROM schedule WHERE year = " + 
         year + 
-        " and month = " + 
+        " AND month = " + 
         month + 
-        " order by year, month, day"
+        " ORDER BY year, month, day"
 
     db.all(query, function(err, rows) {
         process(rows, res)
@@ -213,7 +224,7 @@ function generateBusy(rows, res) {
 // GET Requests
 
 // Returns the state for a given year and month
-// Used to populate the calendar on the frontend
+// Used to populate the calendar on the front-end
 app.get('/state/year/:year_number/month/:month_number', function (req, res) {
     
     var year = req.params.year_number
@@ -228,8 +239,14 @@ app.get('/state/year/:year_number/month/:month_number', function (req, res) {
 
 })
 
+// Returns a list of active clients 
+// Used to populate the client list on front-end
+app.get('/clients/active', function (req, res) {
+    queryActiveClientsAndSend(res)
+})
+
 // Returns the days for a given year and month
-// Used to build the calendar on the frontend
+// Used to build the calendar on the front-end
 app.get('/days/year/:year_number/month/:month_number', function (req, res) {
     
     var year = req.params.year_number
