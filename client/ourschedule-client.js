@@ -146,13 +146,9 @@ function createTable() {
 
 // Colors the cells based on the current state
 function applyCurrentState(current_state) {
-    var cells = document.getElementsByTagName('td')
-    for (var i=0; i<cells.length; i++) {
-        if ( Number(cells[i].id) == cells[i].id && cells[i].id.length > 0 ) {
-            var day_number = Number(cells[i].id)
-            var day_index = day_number - 1
-            applyCellState(cells[i], current_state[day_index]["shift"], true)
-        }
+
+    for (var i=0; i<current_state.length; i++) {
+        applyCellState(document.getElementById(current_state[i].day), current_state[i].shift, true)
     }
 }
 

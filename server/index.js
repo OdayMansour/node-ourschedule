@@ -115,11 +115,11 @@ function queryActiveClientsAndSend(res) {
 function queryAndSend(year, month, res) {
     
     var query = 
-        "SELECT year, month, day, shift FROM schedule WHERE year = " + 
+        "SELECT year, month, day, shift, client FROM schedule WHERE year = " + 
         year + 
         " AND month = " + 
         month + 
-        " ORDER BY year, month, day"
+        " AND shift <> 0 ORDER BY year, month, day"
     
     db.all(query, function(err, rows) {
     
