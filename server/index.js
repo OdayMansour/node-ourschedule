@@ -87,12 +87,12 @@ function printSummary() {
 function createEmptyRowsAndSendThem(year, month, res) {
 
     var days_in_month = calendar.monthrange(year, month)[1]
-    
+
     var stmt = db.prepare("INSERT INTO schedule VALUES (?, ?, ?, 0)");
     for (var i=0; i < days_in_month; i++) {
         stmt.run(year, month, i+1);
     }
-    
+
     stmt.finalize(function () {
         queryAndSend(year, month, res)
     });
@@ -113,47 +113,35 @@ function queryActiveClientsAndSend(res) {
 // If no state for a year, month combo is found,
 // creates a blank state for the month then calls itself again to serve it
 function queryAndSend(year, month, res) {
-    
-    var query = 
-        "SELECT year, month, day, shift, client FROM schedule WHERE year = " + 
-        year + 
-        " AND month = " + 
-        month + 
+
+    var query =
+        "SELECT year, month, day, shift, client FROM schedule WHERE year = " +
+        year +
+        " AND month = " +
+        month +
         " AND shift <> 0 ORDER BY year, month, day"
-    
+
     db.all(query, function(err, rows) {
-    
-        if (rows.length == 0) {
-            console.log(
-                "No data found for year " + 
-                year + 
-                ", month " + 
-                month
-            )
-            console.log("Creating empty rows...")
-            createEmptyRowsAndSendThem(year, month, res)
-        } else {
-            console.log(
-                "Found " + 
-                rows.length + 
-                " days for year " + 
-                year + 
-                ", month " + 
-                month
-            )
-            res.send(rows)
-        }
-    
+        console.log(
+            "Found " +
+            rows.length +
+            " days for year " +
+            year +
+            ", month " +
+            month
+        )
+        res.send(rows)
+
     })
 }
 
 function queryAndProcessAndSend(year, month, process, res) {
-    
-    var query = 
-        "SELECT year, month, day, shift FROM schedule WHERE year = " + 
-        year + 
-        " AND month = " + 
-        month + 
+
+    var query =
+        "SELECT year, month, day, shift FROM schedule WHERE year = " +
+        year +
+        " AND month = " +
+        month +
         " ORDER BY year, month, day"
 
     db.all(query, function(err, rows) {
@@ -226,7 +214,7 @@ function generateBusy(rows, res) {
 // Returns the state for a given year and month
 // Used to populate the calendar on the front-end
 app.get('/state/year/:year_number/month/:month_number', function (req, res) {
-    
+
     var year = req.params.year_number
     var month = req.params.month_number
 
@@ -239,7 +227,7 @@ app.get('/state/year/:year_number/month/:month_number', function (req, res) {
 
 })
 
-// Returns a list of active clients 
+// Returns a list of active clients
 // Used to populate the client list on front-end
 app.get('/clients/active', function (req, res) {
     queryActiveClientsAndSend(res)
@@ -248,7 +236,7 @@ app.get('/clients/active', function (req, res) {
 // Returns the days for a given year and month
 // Used to build the calendar on the front-end
 app.get('/days/year/:year_number/month/:month_number', function (req, res) {
-    
+
     var year = req.params.year_number
     var month = req.params.month_number
 
@@ -285,29 +273,24 @@ app.get('/text/busy/year/:year_number/month/:month_number', function (req, res) 
 
 // Saves submitted state into the database
 app.post('/state/year/:year_number/month/:month_number', function (req, res) {
-    
-    var new_state = req.body
 
-    if ( new_state.length > 0 ) {
-        var deleter = "DELETE FROM schedule WHERE month = " + req.body[0].month;
-        db.run(deleter)
+    var new_state = req.body.state
 
-        var stmt = db.prepare("INSERT INTO schedule values (?, ?, ?, ?, ?)");
-        for (var i=0; i < new_state.length; i++) {
-            stmt.run(new_state[i].year, new_state[i].month, new_state[i].day, new_state[i].shift, new_state[i].client);
-        }
+    var deleter = "DELETE FROM schedule WHERE year = " + req.body.year + " AND month = " + req.body.month;
+    db.run(deleter)
 
-        stmt.finalize(function () {
-            res.send("")
-            console.log(
-                "Applied state change for year " + 
-                req.params.year_number + 
-                ", month " + 
-                req.params.month_number
-            )
-        })
-    } else {
-        res.send("")
-        console.log("Received empty state, did nothing.")
+    var stmt = db.prepare("INSERT INTO schedule values (?, ?, ?, ?, ?)");
+    for (var i=0; i < new_state.length; i++) {
+        stmt.run(new_state[i].year, new_state[i].month, new_state[i].day, new_state[i].shift, new_state[i].client);
     }
+
+    stmt.finalize(function () {
+        res.send("")
+        console.log(
+            "Applied state change for year " +
+            req.params.year_number +
+            ", month " +
+            req.params.month_number
+        )
+    })
 })

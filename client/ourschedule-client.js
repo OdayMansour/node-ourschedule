@@ -68,7 +68,7 @@ function startWork() {
     for (var i=0; i<current_state.length; i++) {
         new_state = new_state.concat([JSON.parse(JSON.stringify(current_state[i]))])
     }
-    
+
     createTable()
 }
 
@@ -95,20 +95,20 @@ function createTable() {
     }
 
     tbdy.appendChild(tr)
-    
+
     for (var i = 0; i < days.length; i++) {
         var tr = document.createElement('tr')
-    
+
         for (var j = 0; j < days[i].length; j++) {
             var td = document.createElement('td')
 
             var day_object = new Date(days[i][j])
-    
+
             if ( day_object.getMonth() == month_index ) {
-                
+
                 if ( day_object.getDay() == 0 || day_object.getDay() == 6 ) {
                     td.classList.add('weekend')
-                } 
+                }
 
                 var day_of_month = day_object.getDate()
                 td.id = day_of_month
@@ -131,12 +131,12 @@ function createTable() {
 
                 td.onclick = cycleItem
             }
-    
+
             tr.appendChild(td)
         }
-    
+
         tbdy.appendChild(tr)
-    
+
     }
     tbl.appendChild(tbdy)
     calendar.appendChild(tbl)
@@ -208,7 +208,11 @@ function cycleItem() {
     var new_shift = cycleShift(old_shift)
 
     if (state_index > -1) { // Found a line for the state already
-        current_state[state_index].shift = new_shift
+        if (new_shift == 0) {
+            current_state.pop(state_index)
+        } else {
+            current_state[state_index].shift = new_shift
+        }
     } else {
         var new_state_item = {
             year: globals_year,
@@ -250,7 +254,7 @@ function getDays() {
 function getState() {
     var request = new XMLHttpRequest();
 
-    request.open('GET', '/state/year/' + globals_year + '/month/' + globals_month, true);
+    request.open('GET', '/state/year/' + globals_year + '/month/' + globals_month + "?_=" + (new Date().getTime()), true);
     request.onload = function () {
         current_state = JSON.parse(this.responseText)
         getDays()
@@ -264,7 +268,7 @@ function sendState() {
 
     request.open('POST', '/state/year/' + globals_year + '/month/' + globals_month, true);
     request.setRequestHeader("Content-type", "application/json")
-    request.send(JSON.stringify(current_state))
+    request.send(JSON.stringify({year: globals_year, month: globals_month, state: current_state}))
     request.onreadystatechange = function () {
         if (request.readyState == 4 && request.status == 200) {
             redrawCalendar()
