@@ -35,6 +35,7 @@ var current_state = []
 var days = []
 var clients = []
 var new_state = []
+var selected_client = 3
 
 ///////////////////////////////////////
 // Starts all the magic
@@ -182,7 +183,7 @@ function cycleItem() {
 
     var state_index = -1
     var old_shift = 0
-    var old_client = 0
+    var old_client = selected_client
 
     for (var i=0; i<current_state.length; i++) {
         if ( current_state[i].day == day_number ) {
@@ -192,7 +193,7 @@ function cycleItem() {
         }
     }
 
-    var new_client = 1
+    var new_client = old_client
     var new_shift = cycleShift(old_shift)
 
     if (state_index > -1) { // Found a line for the state already

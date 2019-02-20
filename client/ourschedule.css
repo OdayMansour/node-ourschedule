@@ -21,6 +21,13 @@ td {
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
+
+    /* -webkit-text-stroke: 1px white; */
+    text-shadow:
+    -2px -2px 0 white,  
+     2px -2px 0 white,
+     -2px 2px 0 white,
+      2px 2px 0 white;
 }
 
 th {
