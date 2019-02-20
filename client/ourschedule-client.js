@@ -114,21 +114,6 @@ function createTable() {
                 td.id = day_of_month
                 td.appendChild(document.createTextNode( day_of_month ) )
 
-                    var circle = document.createElement('div')
-                    circle.classList.add('circle')
-                    circle.id = day_of_month + "_right"
-                    td.appendChild(circle)
-
-                    circle = document.createElement('div')
-                    circle.classList.add('circle')
-                    circle.id = day_of_month + "_mid"
-                    td.appendChild(circle)
-
-                    circle = document.createElement('div')
-                    circle.classList.add('circle')
-                    circle.id = day_of_month + "_left"
-                    td.appendChild(circle)
-
                 td.onclick = cycleItem
             }
 
@@ -148,29 +133,34 @@ function createTable() {
 function applyCurrentState(current_state) {
 
     for (var i=0; i<current_state.length; i++) {
-        applyCellState(document.getElementById(current_state[i].day), current_state[i].shift, true)
+        applyCellState(document.getElementById(current_state[i].day), current_state[i].shift, current_state[i].client)
     }
 }
 
 // Removes functional classes from style, keeping custom classes
 function removeClasses(cell) {
-    cell.classList.remove('selected')
+    cell.classList=""
 }
 
-function applyCellState(cell, state, current) {
+function applyCellState(cell, state, client) {
+    var target_class = ""
     if ( state == Shift.OFF ) {
-        removeClasses(cell.children[0])
+        removeClasses(cell)
     }
     if ( state == Shift.MORNING ) {
-        cell.children[2].classList.add('selected')
+        removeClasses(cell)
+        target_class = "state_morning_" + client
+        cell.classList.add(target_class)
     }
     if ( state == Shift.DAY ) {
-        removeClasses(cell.children[2])
-        cell.children[1].classList.add('selected')
+        removeClasses(cell)
+        target_class = "state_day_" + client
+        cell.classList.add(target_class)
     }
     if ( state == Shift.EVENING ) {
-        removeClasses(cell.children[1])
-        cell.children[0].classList.add('selected')
+        removeClasses(cell)
+        target_class = "state_evening_" + client
+        cell.classList.add(target_class)
     }
 }
 
@@ -187,9 +177,7 @@ function cycleShift(shift) {
 }
 
 function cycleItem() {
-    console.log("Cycling item:")
-    console.log(this)
-    console.log(this.id)
+
     var day_number = Number(this.id)
 
     var state_index = -1
@@ -209,7 +197,7 @@ function cycleItem() {
 
     if (state_index > -1) { // Found a line for the state already
         if (new_shift == 0) {
-            current_state.pop(state_index)
+            current_state.splice(state_index,1)
         } else {
             current_state[state_index].shift = new_shift
         }
@@ -224,7 +212,7 @@ function cycleItem() {
         current_state.push(new_state_item)
     }
 
-    applyCellState(this, new_shift, true)
+    applyCellState(this, new_shift, new_client)
 }
 
 function getClients() {
